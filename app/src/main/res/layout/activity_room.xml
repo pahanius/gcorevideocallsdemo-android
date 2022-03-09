@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="gcore.videocalls.demo.call.RoomViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".room.RoomActivity">
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/recyclerView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_marginEnd="5dp"-->
+<!--            android:visibility="@{viewModel.isModer ? View.GONE : View.VISIBLE}"-->
+<!--            bind:layout_constraintTop_toBottomOf="@+id/localVideo" />-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/remote_peers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="10dp"
+            android:isScrollContainer="true"
+            bind:layout_constraintBottom_toTopOf="@id/disableVideo"
+            bind:layout_constraintTop_toBottomOf="@+id/localVideo"
+            tools:layout_editor_absoluteX="10dp" />
+
+        <gcore.videocalls.meet.ui.view.me.LocalVideoView
+            android:id="@+id/localVideo"
+            android:layout_width="130dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/peer_item_background"
+            bind:layout_constraintDimensionRatio="4:3"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/display_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@{viewModel.userName}"
+            bind:layout_constraintBottom_toBottomOf="@+id/close"
+            bind:layout_constraintStart_toEndOf="@+id/close"
+            bind:layout_constraintTop_toTopOf="@+id/close" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/specialistName"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@{viewModel.specialistName}"-->
+        <!--            bind:layout_constraintEnd_toStartOf="@+id/duration"-->
+        <!--            bind:layout_constraintTop_toTopOf="parent"-->
+        <!--            tools:text="Enrico Cescutti" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/status"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            bind:layout_constraintEnd_toStartOf="@+id/localVideo"-->
+        <!--            bind:layout_constraintTop_toBottomOf="@+id/specialistName"-->
+        <!--            tools:text="Calling..." />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/duration"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@{viewModel.duration}"-->
+        <!--            bind:layout_constraintBottom_toBottomOf="@+id/specialistName"-->
+        <!--            bind:layout_constraintEnd_toEndOf="parent"-->
+        <!--            bind:layout_constraintTop_toTopOf="@+id/specialistName"-->
+        <!--            tools:text="1:26" />-->
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:animateLayoutChanges="true"
+            android:onClick="@{(view) -> viewModel.closeCall()}"
+            android:src="@drawable/ic_cellular"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/log_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Show Log"
+            android:textColor="#2196F3"
+            bind:layout_constraintStart_toStartOf="@id/close"
+            bind:layout_constraintTop_toBottomOf="@id/close" />
+
+        <ImageView
+            android:id="@+id/disableAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:onClick="@{(view) -> viewModel.disableEnableMic()}"
+            android:src="@{viewModel.audioMuted ? @drawable/ic_mic_disabled : @drawable/ic_mic}"
+            bind:layout_constraintBottom_toBottomOf="@id/disableVideo"
+            bind:layout_constraintEnd_toStartOf="@id/disableVideo"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="@id/disableVideo" />
+
+        <ImageView
+            android:id="@+id/disableVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:animateLayoutChanges="true"
+            android:onClick="@{(view) -> viewModel.disableEnableCam()}"
+            android:src="@{viewModel.audioOnly ? @drawable/ic_video_deisabled : @drawable/ic_video}"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintHorizontal_chainStyle="packed"
+            bind:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/changeCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{(view) -> viewModel.changeCamera()}"
+            android:src="@drawable/ic_change_camera"
+            bind:layout_constraintBottom_toBottomOf="@id/disableVideo"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toEndOf="@id/disableVideo"
+            bind:layout_constraintTop_toTopOf="@id/disableVideo"
+            bind:tint="@color/black" />
+
+
+        <!--        <ScrollView-->
+        <!--            android:id="@+id/log_view_scroll"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_marginVertical="70dp">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/log_view"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_marginVertical="70dp"-->
+        <!--                android:background="@color/white"-->
+        <!--                android:text="@{viewModel.textLog}" />-->
+
+        <!--        </ScrollView>-->
+        <!--        <com.github.pedrovgs.lynx.LynxView-->
+        <!--            android:id="@+id/log_view"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_marginVertical="70dp" />-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

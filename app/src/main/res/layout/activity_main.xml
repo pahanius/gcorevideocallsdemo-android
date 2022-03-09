@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gcore.videocalls.demo.MainActivity">
+
+    <gcore.videocalls.meet.ui.view.me.LocalVideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/client_Host_Name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="80dp"
+        android:text="Client Host Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/room_id_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:text="Room Id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/client_Host_Name_text" />
+
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:text="Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_id_text" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/client_Host_Name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="https://meetv2.youstreamer.com"
+        app:layout_constraintBottom_toBottomOf="@+id/client_Host_Name_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/client_Host_Name_text"
+        app:layout_constraintTop_toTopOf="@+id/client_Host_Name_text" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/room_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="serv0_test1"
+        app:layout_constraintBottom_toBottomOf="@+id/room_id_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/room_id_text"
+        app:layout_constraintTop_toTopOf="@+id/room_id_text" />
+<!--    android:text="eybLN"-->
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="nnn"
+        app:layout_constraintBottom_toBottomOf="@+id/name_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/room_id_text"
+        app:layout_constraintTop_toTopOf="@+id/name_text" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/tb_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:checked="true"
+        android:text="Video"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_text"
+        app:switchPadding="10dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/tb_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:checked="true"
+        android:text="Audio"
+        app:layout_constraintEnd_toStartOf="@+id/tb_moder"
+        app:layout_constraintStart_toEndOf="@+id/tb_video"
+        app:layout_constraintTop_toBottomOf="@id/name_text"
+        app:switchPadding="10dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/tb_moder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:checked="true"
+        android:text="Moder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_text"
+        app:switchPadding="10dp" />
+
+    <Button
+        android:id="@+id/join"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:text="Join"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tb_video" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

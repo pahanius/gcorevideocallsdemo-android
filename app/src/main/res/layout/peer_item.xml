@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:binding="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="gcore.videocalls.demo.call.PeerDataBinding" />
+
+        <variable
+            name="PeerData"
+            type="PeerDataBinding" />
+        <!--        <import type="androidx.databinding.ObservableField" />-->
+
+        <!--        <variable-->
+        <!--            name="isMicEnabled"-->
+        <!--            type="ObservableField&lt;Boolean&gt;" />-->
+
+        <!--        <variable-->
+        <!--            name="isCamEnabled"-->
+        <!--            type="ObservableField&lt;Boolean&gt;" />-->
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/peer_item_background">
+
+        <ImageView
+            android:layout_marginStart="10dp"
+            android:id="@+id/moderator_options"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_three_dots"
+            app:layout_constraintBottom_toTopOf="@+id/peer_video_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/image_mic"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/peer_video_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            binding:mic_state="@{PeerData.audioEnabled}" />
+
+        <ImageView
+            android:id="@+id/image_video"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_videocam_notification"
+            app:layout_constraintBottom_toTopOf="@+id/peer_video_view"
+            app:layout_constraintEnd_toStartOf="@+id/image_mic"
+            app:layout_constraintTop_toTopOf="parent"
+            binding:video_state="@{PeerData.videoVisible}" />
+
+        <gcore.videocalls.meet.ui.view.peer.PeerVideoView
+            android:id="@+id/peer_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="40dp"
+            android:background="@color/black" />
+
+        <TextView
+            android:id="@+id/display_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="15dp"
+            android:gravity="center|start"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/peer_video_view" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,5 @@
+rootProject.name = "GCoreVideoCallsDemo"
+include ':app'
+include ':sdk'
+include ':GCoreVideoCallsSDK'
+include ':mediasoup-android-client'
