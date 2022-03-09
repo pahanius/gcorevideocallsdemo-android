@@ -1,0 +1,39 @@
+stages:
+  - stage
+  # - production
+
+variables:
+  LC_ALL: "en_US.UTF-8"
+  LANG: "en_US.UTF-8"
+
+.stage:
+  only:
+    - /^stage/.*$/
+  except:
+    - branches
+  tags:
+    - android
+
+stage:
+  stage: stage
+  script:
+    - bundle install
+    - fastlane stage
+  extends:
+    .stage
+
+# .production:
+#   only:
+#     - /^production/.*$/
+#   except:
+#     - branches
+#   tags:
+#     - android
+
+# production:
+#   stage: production
+#   script:
+#     - bundle install
+#     - fastlane production
+#   extends:
+#     .production

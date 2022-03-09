@@ -1,0 +1,41 @@
+default_platform(:android)
+
+platform :android do
+  before_all do
+    gradle(task: "clean")
+  end
+
+  lane :stage do
+    gradle(
+      task: "assemble",
+      build_type: "debug"
+    )
+
+    output_json = read_json(
+      json_path: lane_context[SharedValues::GRADLE_OUTPUT_JSON_OUTPUT_PATH]
+    )
+    outputFile = output_json[:elements].first[:outputFile]
+
+    upload_apk(
+        apk_path: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+        output_file: outputFile,
+        release_type: 'stage'
+    )
+  end
+
+  private_lane :upload_apk do |options|
+     upload_to_server(
+          endPoint: 'https://cloudapps.l-tech.ru/api/v1/upload-apk',
+          method: :post,
+          multipartPayload: {
+              :release_type => options[:release_type],
+              :name => options[:output_file],
+              :fileFormFieldName => "apk"
+          },
+          headers: {
+              :Authorization => "Bearer #{ENV['FASTLANE_UPLOAD']}"
+          },
+          apk: options[:apk_path]
+      )
+  end
+end
