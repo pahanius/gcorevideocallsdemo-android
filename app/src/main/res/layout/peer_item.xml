@@ -7,6 +7,8 @@
 
         <import type="gcore.videocalls.demo.call.PeerDataBinding" />
 
+        <import type="android.view.View" />
+
         <variable
             name="PeerData"
             type="PeerDataBinding" />
@@ -28,11 +30,12 @@
         android:background="@drawable/peer_item_background">
 
         <ImageView
-            android:layout_marginStart="10dp"
             android:id="@+id/moderator_options"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginStart="10dp"
             android:src="@drawable/ic_three_dots"
+            android:visibility="@{PeerData.isModer ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/peer_video_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -18,6 +18,7 @@ import gcore.videocalls.meet.model.Peers
 import gcore.videocalls.meet.model.RoomInfo
 import gcore.videocalls.meet.network.ConnectionState
 import gcore.videocalls.meet.network.ConsumerKind
+import gcore.videocalls.meet.network.WaitingState
 import gcore.videocalls.meet.room.RoomManager
 import gcore.videocalls.meet.ui.view.me.ILocalVideoView
 import gcore.videocalls.meet.ui.view.peer.PeerVideoRoomViewModel
@@ -57,16 +58,51 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     private var updateTokenTimer: Timer? = null
     private var pingTimer: Timer? = null
 
+    val waitingProgressVisible = SingleLiveEvent<Boolean>(false)
+    private val waitingStateObserver = Observer<WaitingState> {
+        if (it == WaitingState.IN_WAITING)
+            waitingProgressVisible.postValue(true)
+        else
+            waitingProgressVisible.postValue(false)
+    }
+
+    val requestMicToModeratorDialogOpen = MutableLiveData<Boolean>()
+    val requestCamToModeratorDialogOpen = MutableLiveData<Boolean>()
+
     val audioPermissionDialogOpen = MutableLiveData<Boolean>()
     val videoPermissionDialogOpen = MutableLiveData<Boolean>()
-    private val audioObserver = Observer<Unit?> {
+
+    val audioPermissionAfterAskDialogOpen = MutableLiveData<Boolean>()
+    val videoPermissionAfterAskDialogOpen = MutableLiveData<Boolean>()
+
+    private val askUserConfirmMicObserver = Observer<Unit?> {
+        if (requestMicToModeratorDialogOpen.value != true)
+            requestMicToModeratorDialogOpen.postValue(true)
+    }
+
+    private val askUserConfirmCamObserver = Observer<Unit?> {
+        if (requestCamToModeratorDialogOpen.value != true)
+            requestCamToModeratorDialogOpen.postValue(true)
+    }
+
+    private val acceptedAudioPermissionObserver = Observer<Unit?> {
         if (audioPermissionDialogOpen.value != true)
             audioPermissionDialogOpen.postValue(true)
     }
-    private val videoObserver = Observer<Unit?> {
+    private val acceptedVideoPermissionObserver = Observer<Unit?> {
         if (videoPermissionDialogOpen.value != true)
             videoPermissionDialogOpen.postValue(true)
     }
+
+    private val acceptedAudioPermissionFromModeratorObserver = Observer<Unit?> {
+        if (audioPermissionAfterAskDialogOpen.value != true)
+            audioPermissionAfterAskDialogOpen.postValue(true)
+    }
+    private val acceptedVideoPermissionFromModeratorObserver = Observer<Unit?> {
+        if (videoPermissionAfterAskDialogOpen.value != true)
+            videoPermissionAfterAskDialogOpen.postValue(true)
+    }
+
 
     init {
         updateTokenTimer = Timer()
@@ -74,6 +110,27 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     }
 
     fun init() {
+        roomManager.roomProvider.waitingState.observeForever(waitingStateObserver)
+
+        roomManager.roomProvider.closedByModerator.observeForever(closedByModeratorObserver)
+        roomManager.askUserConfirmMic.observeForever(askUserConfirmMicObserver)
+        roomManager.askUserConfirmCam.observeForever(askUserConfirmCamObserver)
+        roomManager.roomProvider.acceptedAudioPermission.observeForever(
+            acceptedAudioPermissionObserver
+        )
+        roomManager.roomProvider.acceptedVideoPermission.observeForever(
+            acceptedVideoPermissionObserver
+        )
+        roomManager.roomProvider.acceptedAudioPermissionFromModerator.observeForever(
+            acceptedAudioPermissionFromModeratorObserver
+        )
+        roomManager.roomProvider.acceptedVideoPermissionFromModerator.observeForever(
+            acceptedVideoPermissionFromModeratorObserver
+        )
+
+        checkWaitingRoom.observeForever(checkWaitingRoomObserver)
+        askModeratorToJoin.observeForever(askModeratorToJoinObserver)
+
         if (isConnected) {
             startCall.value = Unit
             return
@@ -81,13 +138,13 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         viewModelScope.launch {
             showProgressBar()
             startStopwatch()
+//            if (isModer.value == true) {
             startCall.value = Unit
             hideProgressBar()
+//            } else {
+//                checkWaitingRoom.value = roomManager.checkWaitingRoom()
+//            }
         }
-
-        roomManager.roomProvider.closedByModerator.observeForever(closedByModeratorObserver)
-        roomManager.roomProvider.acceptedAudioPermissionFromModerator.observeForever(audioObserver)
-        roomManager.roomProvider.acceptedVideoPermissionFromModerator.observeForever(videoObserver)
 //        sdkLogger.log = {
 //            textLog.set(textLog.get() + it)
 //        }
@@ -111,11 +168,25 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     }
 
     fun disableEnableCam() {
+//        if (roomManager.roomProvider.camAllowed.value == true)
         localVideo.disableEnableCam()
+//        else
+//            requestCamToModeratorDialogOpen.postValue(true)
     }
 
     fun disableEnableMic() {
+//        if (roomManager.roomProvider.micAllowed.value == true)
         localVideo.disableEnableMic()
+//        else
+//            requestMicToModeratorDialogOpen.postValue(true)
+    }
+
+    fun askModeratorEnableMic() {
+        roomManager.askModeratorEnableMic()
+    }
+
+    fun askModeratorEnableCam() {
+        roomManager.askModeratorEnableCam()
     }
 
     fun changeCamera() {
@@ -145,6 +216,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         audioOnlyInProgress.set(localState.isAudioOnlyInProgress)
         audioMuted.set(localState.isAudioMuted)
         restartIceInProgress.set(localState.isRestartIceInProgress)
+//        roomManager.checkWaitingRoom()
     }
 
     private val connectedObservable = Observer { it: Boolean ->
@@ -195,9 +267,26 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         GCoreMeet.instance.starTime = 0L
         closed.value = Unit
 
+        roomManager.roomProvider.waitingState.removeObserver(waitingStateObserver)
+
         roomManager.roomProvider.closedByModerator.removeObserver(closedByModeratorObserver)
-        roomManager.roomProvider.acceptedAudioPermissionFromModerator.removeObserver(audioObserver)
-        roomManager.roomProvider.acceptedVideoPermissionFromModerator.removeObserver(videoObserver)
+        roomManager.askUserConfirmMic.removeObserver(askUserConfirmMicObserver)
+        roomManager.askUserConfirmCam.removeObserver(askUserConfirmCamObserver)
+        roomManager.roomProvider.acceptedAudioPermission.removeObserver(
+            acceptedAudioPermissionObserver
+        )
+        roomManager.roomProvider.acceptedVideoPermission.removeObserver(
+            acceptedVideoPermissionObserver
+        )
+        roomManager.roomProvider.acceptedAudioPermissionFromModerator.removeObserver(
+            acceptedAudioPermissionFromModeratorObserver
+        )
+        roomManager.roomProvider.acceptedVideoPermissionFromModerator.removeObserver(
+            acceptedVideoPermissionFromModeratorObserver
+        )
+
+        checkWaitingRoom.removeObserver(checkWaitingRoomObserver)
+        askModeratorToJoin.removeObserver(askModeratorToJoinObserver)
 
         roomManager.roomProvider.peers.removeObserver(peersObservable)
         roomManager.roomProvider.waitingPeers.removeObserver(waitingPeersObservable)
@@ -246,4 +335,45 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
             }
         }
     }
+
+    private val askModeratorToJoin = SingleLiveEvent<Boolean?>(null)
+    private val askModeratorToJoinObserver = Observer<Boolean?> {
+        when (it) {
+            true -> {
+                startCall.value = Unit
+                hideProgressBar()
+            }
+            false -> {
+                closed.value = Unit
+                closeCall.value = Unit
+            }
+        }
+    }
+
+    private val checkWaitingRoom = SingleLiveEvent<Boolean?>(null)
+    private val checkWaitingRoomObserver = Observer<Boolean?> {
+        when (it) {
+            null -> return@Observer
+            true -> {
+                askModeratorToJoin.value = roomManager.askModeratorToJoin()
+            }
+            false -> {
+                startCall.value = Unit
+                hideProgressBar()
+            }
+        }
+    }
+
+    fun showProgress() {
+        showProgressBar()
+    }
+
+    fun hideProgress() {
+        hideProgressBar()
+    }
+//
+//    fun checkWaitingRoom() {
+//
+//    }
+
 }

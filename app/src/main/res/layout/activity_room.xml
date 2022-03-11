@@ -18,15 +18,15 @@
         android:orientation="vertical"
         tools:context=".room.RoomActivity">
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/recyclerView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginStart="5dp"-->
-<!--            android:layout_marginEnd="5dp"-->
-<!--            android:visibility="@{viewModel.isModer ? View.GONE : View.VISIBLE}"-->
-<!--            bind:layout_constraintTop_toBottomOf="@+id/localVideo" />-->
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+        <!--            android:id="@+id/recyclerView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:layout_marginHorizontal="10dp"-->
+        <!--            android:layout_marginStart="5dp"-->
+        <!--            android:layout_marginEnd="5dp"-->
+        <!--            android:visibility="@{viewModel.isModer ? View.GONE : View.VISIBLE}"-->
+        <!--            bind:layout_constraintTop_toBottomOf="@+id/localVideo" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/remote_peers"
@@ -165,6 +165,36 @@
         <!--            android:layout_width="match_parent"-->
         <!--            android:layout_height="match_parent"-->
         <!--            android:layout_marginVertical="70dp" />-->
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#4D000000"
+            android:visibility="@{viewModel.waitingProgressVisible ? View.VISIBLE : View.GONE}" />
+
+        <ProgressBar
+            android:id="@+id/waiting_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="@{viewModel.waitingProgressVisible ? View.VISIBLE : View.GONE}"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/waiting_progress_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please wait, the meeting\n host will let you in soon"
+            android:textAlignment="center"
+            android:visibility="@{viewModel.waitingProgressVisible ? View.VISIBLE : View.GONE}"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@+id/waiting_progress" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

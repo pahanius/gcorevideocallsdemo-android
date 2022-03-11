@@ -150,25 +150,83 @@ class RoomActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.audioPermissionDialogOpen.observe(this, Observer {
+        viewModel.requestMicToModeratorDialogOpen.observe(this, Observer {
             if (!it) return@Observer
-            if (viewModel.audioMuted.get() != true) {
-                viewModel.audioPermissionDialogOpen.value = false
-                return@Observer
-            }
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setTitle("Запрос от модератора")
-            builder.setMessage("Включить микрофон?")
+            builder.setTitle("Mics are currently disabled in this room")
+            builder.setMessage("Ask moderator to enable mic?")
             builder.setPositiveButton(
-                "Да",
+                "Yes",
+                DialogInterface.OnClickListener { _, _ ->
+                    viewModel.askModeratorEnableMic()
+                    viewModel.requestMicToModeratorDialogOpen.value = false
+                })
+            builder.setNegativeButton(
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
+                    viewModel.requestMicToModeratorDialogOpen.value = false
+                }
+            )
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        })
+        viewModel.requestCamToModeratorDialogOpen.observe(this, Observer {
+            if (!it) return@Observer
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Cams are currently disabled in this room")
+            builder.setMessage("Ask moderator to enable cam?")
+            builder.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { _, _ ->
+                    viewModel.askModeratorEnableCam()
+                    viewModel.requestCamToModeratorDialogOpen.value = false
+                })
+            builder.setNegativeButton(
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
+                    viewModel.requestCamToModeratorDialogOpen.value = false
+                }
+            )
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        })
+
+        viewModel.audioPermissionDialogOpen.observe(this, Observer {
+            if (!it) return@Observer
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Request from moderator")
+            builder.setMessage("Turn on the mic?")
+            builder.setPositiveButton(
+                "Yes",
                 DialogInterface.OnClickListener { _, _ ->
 //                    viewModel.disableEnableMic()
                     viewModel.localVideo.enableMic()
                     viewModel.audioPermissionDialogOpen.value = false
                 })
             builder.setNegativeButton(
-                "Отмена", DialogInterface.OnClickListener { _, _ ->
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
+                    viewModel.audioPermissionDialogOpen.value = false
+                }
+            )
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        })
+        viewModel.videoPermissionDialogOpen.observe(this, Observer {
+            if (!it) return@Observer
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Request from moderator")
+            builder.setMessage("Turn on the cam?")
+            builder.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { _, _ ->
+//                    viewModel.disableEnableCam()
+                    viewModel.localVideo.enableCam()
+                    viewModel.audioPermissionDialogOpen.value = false
+                })
+            builder.setNegativeButton(
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
                     viewModel.audioPermissionDialogOpen.value = false
                 }
             )
@@ -176,31 +234,45 @@ class RoomActivity : AppCompatActivity() {
             dialog.show()
         })
 
-        viewModel.videoPermissionDialogOpen.observe(this, Observer {
+        viewModel.audioPermissionAfterAskDialogOpen.observe(this, Observer {
             if (!it) return@Observer
-            if (viewModel.audioOnly.get() != true) {
-                viewModel.audioPermissionDialogOpen.value = false
-                return@Observer
-            }
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setTitle("Запрос от модератора")
-            builder.setMessage("Включить камеру?")
+            builder.setTitle("The moderator confirmed the request")
+            builder.setMessage("Turn on the mic?")
             builder.setPositiveButton(
-                "Да",
+                "Yes",
                 DialogInterface.OnClickListener { _, _ ->
-//                    viewModel.disableEnableCam()
-                    viewModel.localVideo.enableCam()
-                    viewModel.audioPermissionDialogOpen.value = false
+                    viewModel.localVideo.enableMic()
+                    viewModel.audioPermissionAfterAskDialogOpen.value = false
                 })
             builder.setNegativeButton(
-                "Отмена", DialogInterface.OnClickListener { _, _ ->
-                    viewModel.audioPermissionDialogOpen.value = false
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
+                    viewModel.audioPermissionAfterAskDialogOpen.value = false
                 }
             )
             val dialog: AlertDialog = builder.create()
             dialog.show()
+        })
+        viewModel.videoPermissionAfterAskDialogOpen.observe(this, Observer {
+            if (!it) return@Observer
 
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("The moderator confirmed the request")
+            builder.setMessage("Turn on the cam?")
+            builder.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { _, _ ->
+                    viewModel.localVideo.enableCam()
+                    viewModel.videoPermissionAfterAskDialogOpen.value = false
+                })
+            builder.setNegativeButton(
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
+                    viewModel.videoPermissionAfterAskDialogOpen.value = false
+                }
+            )
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         })
 
         viewModel.init()
@@ -228,8 +300,19 @@ class RoomActivity : AppCompatActivity() {
             sdkLogger?.clearLog()
             sdkLogger?.initObserver()
 
+            viewModel.showProgress()
+
             GCoreMeet.instance.startConnection(this)
+
+//            if (waiting == true) {
+//                val ask = roomManager.askModeratorToJoin()
+//                if (ask == false) return@runOnUiThread
+//            }
+
+            viewModel.hideProgress()
+
             viewModel.connect()
+
             dataBinding.localVideo.connect()
             configPeer()
 
@@ -239,6 +322,9 @@ class RoomActivity : AppCompatActivity() {
             if (roomManager.isClosed()) {
                 roomManager.join()
             }
+//
+//            val waiting = roomManager.checkWaitingRoom()
+//            val ask = roomManager.askModeratorToJoin()
 
         }
     }
