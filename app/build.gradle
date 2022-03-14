@@ -44,9 +44,9 @@ android {
 
 dependencies {
     //required
-//    implementation project(':sdk')
+    implementation project(':sdk')
     implementation project(':GCoreVideoCallsSDK')
-    implementation project(':mediasoup-android-client')
+//    implementation project(':mediasoup-android-client')
 
     implementation "org.protoojs.droid:protoo-client:4.0.3"
     implementation "io.reactivex.rxjava2:rxandroid:$RX_VERSION"

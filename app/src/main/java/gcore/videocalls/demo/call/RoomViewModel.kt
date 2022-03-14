@@ -19,6 +19,7 @@ import gcore.videocalls.meet.model.RoomInfo
 import gcore.videocalls.meet.network.ConnectionState
 import gcore.videocalls.meet.network.ConsumerKind
 import gcore.videocalls.meet.network.WaitingState
+import gcore.videocalls.meet.room.RequestPeerData
 import gcore.videocalls.meet.room.RoomManager
 import gcore.videocalls.meet.ui.view.me.ILocalVideoView
 import gcore.videocalls.meet.ui.view.peer.PeerVideoRoomViewModel
@@ -41,6 +42,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     val specialistName = MutableLiveData<String>()
     val duration = MutableLiveData<String>()
     val userName = MutableLiveData<String>()
+    val roomId = MutableLiveData<String>()
     val isModer = MutableLiveData<Boolean>()
 
     val closeCall = SingleLiveEvent<Unit>()
@@ -66,8 +68,8 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
             waitingProgressVisible.postValue(false)
     }
 
-    val requestMicToModeratorDialogOpen = MutableLiveData<Boolean>()
-    val requestCamToModeratorDialogOpen = MutableLiveData<Boolean>()
+    val askUserConfirmMicDialogOpen = MutableLiveData<Boolean>()
+    val askUserConfirmCamDialogOpen = MutableLiveData<Boolean>()
 
     val audioPermissionDialogOpen = MutableLiveData<Boolean>()
     val videoPermissionDialogOpen = MutableLiveData<Boolean>()
@@ -76,13 +78,13 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     val videoPermissionAfterAskDialogOpen = MutableLiveData<Boolean>()
 
     private val askUserConfirmMicObserver = Observer<Unit?> {
-        if (requestMicToModeratorDialogOpen.value != true)
-            requestMicToModeratorDialogOpen.postValue(true)
+        if (askUserConfirmMicDialogOpen.value != true)
+            askUserConfirmMicDialogOpen.postValue(true)
     }
 
     private val askUserConfirmCamObserver = Observer<Unit?> {
-        if (requestCamToModeratorDialogOpen.value != true)
-            requestCamToModeratorDialogOpen.postValue(true)
+        if (askUserConfirmCamDialogOpen.value != true)
+            askUserConfirmCamDialogOpen.postValue(true)
     }
 
     private val acceptedAudioPermissionObserver = Observer<Unit?> {
@@ -95,12 +97,19 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     }
 
     private val acceptedAudioPermissionFromModeratorObserver = Observer<Unit?> {
-        if (audioPermissionAfterAskDialogOpen.value != true)
-            audioPermissionAfterAskDialogOpen.postValue(true)
+        localVideo.enableMic()
+//        if (audioPermissionAfterAskDialogOpen.value != true)
+//            audioPermissionAfterAskDialogOpen.postValue(true)
     }
     private val acceptedVideoPermissionFromModeratorObserver = Observer<Unit?> {
-        if (videoPermissionAfterAskDialogOpen.value != true)
-            videoPermissionAfterAskDialogOpen.postValue(true)
+        localVideo.enableCam()
+//        if (videoPermissionAfterAskDialogOpen.value != true)
+//            videoPermissionAfterAskDialogOpen.postValue(true)
+    }
+
+    val requestToModeratorDialog = SingleLiveEvent<RequestPeerData>()
+    private val requestToModeratorObserver = Observer<RequestPeerData?> {
+        it.let { requestToModeratorDialog.postValue(it) }
     }
 
 
@@ -130,6 +139,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
 
         checkWaitingRoom.observeForever(checkWaitingRoomObserver)
         askModeratorToJoin.observeForever(askModeratorToJoinObserver)
+        roomManager.roomProvider.requestToModerator.observeForever(requestToModeratorObserver)
 
         if (isConnected) {
             startCall.value = Unit
@@ -223,6 +233,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         if (it && isConnected != it) {
 //                roomManager.changeDisplayName(userName.value ?: "")
             userName.postValue(roomManager.displayName)
+            roomId.postValue(roomManager.roomId)
             isModer.postValue(roomManager.isModer)
         }
         isConnected = it
@@ -293,6 +304,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         roomManager.roomProvider.me.removeObserver(meObservable)
         roomManager.roomProvider.connected.removeObserver(connectedObservable)
         roomManager.roomProvider.roomInfo.removeObserver(roomInfoObservable)
+        roomManager.roomProvider.requestToModerator.removeObserver(requestToModeratorObserver)
     }
 
     override fun onCleared() {
@@ -313,7 +325,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     fun handleModerEvents(event: ModerOptionsEvent) {
         when (event) {
             is ModerOptionsEvent.PeerRemove -> {
-
+//                roomManager.removeUserByModerator(event.peerId)
             }
             is ModerOptionsEvent.PeerMuteMic -> {
                 roomManager.disableAudioByModerator(event.peerId)
@@ -370,6 +382,10 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
 
     fun hideProgress() {
         hideProgressBar()
+    }
+
+    fun acceptedPermission(peerData: RequestPeerData) {
+        roomManager.acceptedPermission(peerData)
     }
 //
 //    fun checkWaitingRoom() {

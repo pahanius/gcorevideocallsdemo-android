@@ -35,7 +35,7 @@
             android:layout_marginHorizontal="10dp"
             android:isScrollContainer="true"
             bind:layout_constraintBottom_toTopOf="@id/disableVideo"
-            bind:layout_constraintTop_toBottomOf="@+id/localVideo"
+            bind:layout_constraintTop_toBottomOf="@+id/display_name"
             tools:layout_editor_absoluteX="10dp" />
 
         <gcore.videocalls.meet.ui.view.me.LocalVideoView
@@ -53,11 +53,23 @@
             android:id="@+id/display_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
             android:text="@{viewModel.userName}"
-            bind:layout_constraintBottom_toBottomOf="@+id/close"
-            bind:layout_constraintStart_toEndOf="@+id/close"
-            bind:layout_constraintTop_toTopOf="@+id/close" />
+            android:textColor="@color/white"
+            bind:layout_constraintBottom_toBottomOf="@id/localVideo"
+            bind:layout_constraintEnd_toEndOf="@+id/localVideo"
+            bind:layout_constraintStart_toStartOf="@+id/localVideo" />
+
+        <TextView
+            android:id="@+id/moderator_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moderator"
+            android:textColor="@color/white"
+            android:visibility="@{viewModel.isModer ? View.VISIBLE : View.GONE}"
+            bind:layout_constraintEnd_toEndOf="@+id/localVideo"
+            bind:layout_constraintStart_toStartOf="@+id/localVideo"
+            bind:layout_constraintTop_toTopOf="@id/localVideo" />
 
         <!--        <TextView-->
         <!--            android:id="@+id/specialistName"-->
@@ -96,6 +108,16 @@
             android:src="@drawable/ic_cellular"
             bind:layout_constraintStart_toStartOf="parent"
             bind:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/room_id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@{viewModel.roomId}"
+            bind:layout_constraintBottom_toBottomOf="@+id/close"
+            bind:layout_constraintStart_toEndOf="@id/close"
+            bind:layout_constraintTop_toTopOf="@+id/close" />
 
         <TextView
             android:id="@+id/log_button"

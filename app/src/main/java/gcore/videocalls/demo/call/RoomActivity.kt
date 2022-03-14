@@ -27,6 +27,7 @@ import javax.inject.Inject
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import gcore.videocalls.meet.room.RequestType
 
 
 const val ENABLE_MIC = "ENABLE_MIC"
@@ -150,7 +151,7 @@ class RoomActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.requestMicToModeratorDialogOpen.observe(this, Observer {
+        viewModel.askUserConfirmMicDialogOpen.observe(this, Observer {
             if (!it) return@Observer
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -160,17 +161,17 @@ class RoomActivity : AppCompatActivity() {
                 "Yes",
                 DialogInterface.OnClickListener { _, _ ->
                     viewModel.askModeratorEnableMic()
-                    viewModel.requestMicToModeratorDialogOpen.value = false
+                    viewModel.askUserConfirmMicDialogOpen.value = false
                 })
             builder.setNegativeButton(
                 "Cancel", DialogInterface.OnClickListener { _, _ ->
-                    viewModel.requestMicToModeratorDialogOpen.value = false
+                    viewModel.askUserConfirmMicDialogOpen.value = false
                 }
             )
             val dialog: AlertDialog = builder.create()
             dialog.show()
         })
-        viewModel.requestCamToModeratorDialogOpen.observe(this, Observer {
+        viewModel.askUserConfirmCamDialogOpen.observe(this, Observer {
             if (!it) return@Observer
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -180,11 +181,11 @@ class RoomActivity : AppCompatActivity() {
                 "Yes",
                 DialogInterface.OnClickListener { _, _ ->
                     viewModel.askModeratorEnableCam()
-                    viewModel.requestCamToModeratorDialogOpen.value = false
+                    viewModel.askUserConfirmCamDialogOpen.value = false
                 })
             builder.setNegativeButton(
                 "Cancel", DialogInterface.OnClickListener { _, _ ->
-                    viewModel.requestCamToModeratorDialogOpen.value = false
+                    viewModel.askUserConfirmCamDialogOpen.value = false
                 }
             )
             val dialog: AlertDialog = builder.create()
@@ -269,6 +270,32 @@ class RoomActivity : AppCompatActivity() {
             builder.setNegativeButton(
                 "Cancel", DialogInterface.OnClickListener { _, _ ->
                     viewModel.videoPermissionAfterAskDialogOpen.value = false
+                }
+            )
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        })
+
+        viewModel.requestToModeratorDialog.observe(this, Observer { peerData ->
+            if (peerData == null) return@Observer
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Hey!")
+            builder.setMessage(
+                "${peerData.userName} wants to enable " +
+                        when (peerData.requestType) {
+                            RequestType.AUDIO -> "mic"
+                            RequestType.VIDEO -> "cam"
+                            RequestType.SHARE -> "sharing"
+                        }
+            )
+            builder.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { _, _ ->
+                    viewModel.acceptedPermission(peerData)
+                })
+            builder.setNegativeButton(
+                "Cancel", DialogInterface.OnClickListener { _, _ ->
                 }
             )
             val dialog: AlertDialog = builder.create()
