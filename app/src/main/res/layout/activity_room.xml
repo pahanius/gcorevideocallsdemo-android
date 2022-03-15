@@ -134,12 +134,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
+            android:background="@{viewModel.micAllowed ? @drawable/rounded_purple : @drawable/rounded_pink}"
             android:onClick="@{(view) -> viewModel.disableEnableMic()}"
             android:src="@{viewModel.audioMuted ? @drawable/ic_mic_disabled : @drawable/ic_mic}"
             bind:layout_constraintBottom_toBottomOf="@id/disableVideo"
             bind:layout_constraintEnd_toStartOf="@id/disableVideo"
             bind:layout_constraintStart_toStartOf="parent"
-            bind:layout_constraintTop_toTopOf="@id/disableVideo" />
+            bind:layout_constraintTop_toTopOf="@id/disableVideo"
+            bind:tint="@color/white" />
 
         <ImageView
             android:id="@+id/disableVideo"
@@ -147,12 +149,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:animateLayoutChanges="true"
+            android:background="@{viewModel.camAllowed ? @drawable/rounded_purple : @drawable/rounded_pink}"
             android:onClick="@{(view) -> viewModel.disableEnableCam()}"
             android:src="@{viewModel.audioOnly ? @drawable/ic_video_deisabled : @drawable/ic_video}"
             bind:layout_constraintBottom_toBottomOf="parent"
             bind:layout_constraintEnd_toEndOf="parent"
             bind:layout_constraintHorizontal_chainStyle="packed"
-            bind:layout_constraintStart_toStartOf="parent" />
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:tint="@color/white" />
 
         <ImageView
             android:id="@+id/changeCamera"

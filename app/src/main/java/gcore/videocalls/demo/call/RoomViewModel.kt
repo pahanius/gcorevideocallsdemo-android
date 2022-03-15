@@ -54,6 +54,9 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
 
     lateinit var localVideo: ILocalVideoView
 
+    var micAllowed = MutableLiveData<Boolean>()
+    var camAllowed = MutableLiveData<Boolean>()
+
     private var peers: Peers? = null
     private var waitingPeers: Peers? = null
     private var isConnected = false
@@ -112,6 +115,13 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         it.let { requestToModeratorDialog.postValue(it) }
     }
 
+    private val micAllowedObserver = Observer<Boolean> {
+        micAllowed.postValue(it)
+    }
+
+    private val camAllowedObserver = Observer<Boolean> {
+        camAllowed.postValue(it)
+    }
 
     init {
         updateTokenTimer = Timer()
@@ -120,6 +130,9 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
 
     fun init() {
         roomManager.roomProvider.waitingState.observeForever(waitingStateObserver)
+
+        roomManager.roomProvider.micAllowed.observeForever(micAllowedObserver)
+        roomManager.roomProvider.camAllowed.observeForever(camAllowedObserver)
 
         roomManager.roomProvider.closedByModerator.observeForever(closedByModeratorObserver)
         roomManager.askUserConfirmMic.observeForever(askUserConfirmMicObserver)
@@ -140,6 +153,9 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         checkWaitingRoom.observeForever(checkWaitingRoomObserver)
         askModeratorToJoin.observeForever(askModeratorToJoinObserver)
         roomManager.roomProvider.requestToModerator.observeForever(requestToModeratorObserver)
+
+        micAllowed = roomManager.roomProvider.micAllowed
+        camAllowed = roomManager.roomProvider.camAllowed
 
         if (isConnected) {
             startCall.value = Unit
@@ -279,6 +295,9 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
         closed.value = Unit
 
         roomManager.roomProvider.waitingState.removeObserver(waitingStateObserver)
+
+        roomManager.roomProvider.micAllowed.removeObserver(micAllowedObserver)
+        roomManager.roomProvider.camAllowed.removeObserver(camAllowedObserver)
 
         roomManager.roomProvider.closedByModerator.removeObserver(closedByModeratorObserver)
         roomManager.askUserConfirmMic.removeObserver(askUserConfirmMicObserver)
