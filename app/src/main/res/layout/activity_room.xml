@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -35,19 +36,31 @@
             android:layout_marginHorizontal="10dp"
             android:isScrollContainer="true"
             bind:layout_constraintBottom_toTopOf="@id/disableVideo"
-            bind:layout_constraintTop_toBottomOf="@+id/display_name"
+            bind:layout_constraintTop_toBottomOf="@id/localVideoCardView"
             tools:layout_editor_absoluteX="10dp" />
 
-        <gcore.videocalls.meet.ui.view.me.LocalVideoView
-            android:id="@+id/localVideo"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/localVideoCardView"
             android:layout_width="130dp"
             android:layout_height="0dp"
             android:layout_marginTop="22dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/peer_item_background"
+            android:background="@color/black"
+            bind:cardCornerRadius="20dp"
             bind:layout_constraintDimensionRatio="4:3"
             bind:layout_constraintEnd_toEndOf="parent"
-            bind:layout_constraintTop_toTopOf="parent" />
+            bind:layout_constraintTop_toTopOf="parent"
+            card_view:cardElevation="0dp">
+
+            <gcore.videocalls.meet.ui.view.me.LocalVideoView
+                android:id="@+id/localVideo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                bind:layout_constraintDimensionRatio="4:3"
+                bind:layout_constraintEnd_toEndOf="parent"
+                bind:layout_constraintTop_toTopOf="parent" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/display_name"
@@ -56,9 +69,9 @@
             android:layout_marginBottom="5dp"
             android:text="@{viewModel.userName}"
             android:textColor="@color/white"
-            bind:layout_constraintBottom_toBottomOf="@id/localVideo"
-            bind:layout_constraintEnd_toEndOf="@+id/localVideo"
-            bind:layout_constraintStart_toStartOf="@+id/localVideo" />
+            bind:layout_constraintBottom_toBottomOf="@id/localVideoCardView"
+            bind:layout_constraintEnd_toEndOf="@id/localVideoCardView"
+            bind:layout_constraintStart_toStartOf="@id/localVideoCardView" />
 
         <TextView
             android:id="@+id/moderator_text"
@@ -67,9 +80,9 @@
             android:text="Moderator"
             android:textColor="@color/white"
             android:visibility="@{viewModel.isModer ? View.VISIBLE : View.GONE}"
-            bind:layout_constraintEnd_toEndOf="@+id/localVideo"
-            bind:layout_constraintStart_toStartOf="@+id/localVideo"
-            bind:layout_constraintTop_toTopOf="@id/localVideo" />
+            bind:layout_constraintEnd_toEndOf="@id/localVideoCardView"
+            bind:layout_constraintStart_toStartOf="@+id/localVideoCardView"
+            bind:layout_constraintTop_toTopOf="@id/localVideoCardView" />
 
         <!--        <TextView-->
         <!--            android:id="@+id/specialistName"-->
@@ -134,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@{viewModel.micAllowed ? @drawable/rounded_purple : @drawable/rounded_pink}"
+            android:background="@{viewModel.micAllowed || viewModel.isModer ? @drawable/rounded_purple : @drawable/rounded_pink}"
             android:onClick="@{(view) -> viewModel.disableEnableMic()}"
             android:src="@{viewModel.audioMuted ? @drawable/ic_mic_disabled : @drawable/ic_mic}"
             bind:layout_constraintBottom_toBottomOf="@id/disableVideo"
@@ -149,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:animateLayoutChanges="true"
-            android:background="@{viewModel.camAllowed ? @drawable/rounded_purple : @drawable/rounded_pink}"
+            android:background="@{viewModel.camAllowed || viewModel.isModer ? @drawable/rounded_purple : @drawable/rounded_pink}"
             android:onClick="@{(view) -> viewModel.disableEnableCam()}"
             android:src="@{viewModel.audioOnly ? @drawable/ic_video_deisabled : @drawable/ic_video}"
             bind:layout_constraintBottom_toBottomOf="parent"

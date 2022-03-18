@@ -224,11 +224,11 @@ class RoomActivity : AppCompatActivity() {
                 DialogInterface.OnClickListener { _, _ ->
 //                    viewModel.disableEnableCam()
                     viewModel.localVideo.enableCam()
-                    viewModel.audioPermissionDialogOpen.value = false
+                    viewModel.videoPermissionDialogOpen.value = false
                 })
             builder.setNegativeButton(
                 "Cancel", DialogInterface.OnClickListener { _, _ ->
-                    viewModel.audioPermissionDialogOpen.value = false
+                    viewModel.videoPermissionDialogOpen.value = false
                 }
             )
             val dialog: AlertDialog = builder.create()
