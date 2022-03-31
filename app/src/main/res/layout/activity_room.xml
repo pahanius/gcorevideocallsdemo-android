@@ -122,6 +122,15 @@
             bind:layout_constraintStart_toStartOf="parent"
             bind:layout_constraintTop_toTopOf="parent" />
 
+<!--        <ToggleButton-->
+<!--            android:id="@+id/tb_connect"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:checked="true"-->
+<!--            bind:layout_constraintBottom_toBottomOf="@+id/close"-->
+<!--            bind:layout_constraintStart_toEndOf="@+id/close"-->
+<!--            bind:layout_constraintTop_toTopOf="@+id/close" />-->
+
         <TextView
             android:id="@+id/room_id_text"
             android:layout_width="wrap_content"

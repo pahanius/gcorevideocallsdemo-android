@@ -28,6 +28,7 @@ import javax.inject.Inject
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import gcore.videocalls.meet.room.RequestType
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 const val ENABLE_MIC = "ENABLE_MIC"
@@ -109,6 +110,22 @@ class RoomActivity : AppCompatActivity() {
 
         configDataBinding()
         checkPermission()
+
+//        tb_connect.setOnCheckedChangeListener { compoundButton, b ->
+//            if (b) {
+//                val pref =
+//                    applicationContext.getSharedPreferences("MyPref", 0) // 0 - for private mode
+//                val editor: SharedPreferences.Editor = pref.edit()
+//
+//
+//                GCoreMeet.instance.setRoomId(pref.getString("room_id", "serv0_test1")!!)
+//                GCoreMeet.instance.roomManager.displayName = "sss"
+//                GCoreMeet.instance.roomManager.isModer = true
+//                viewModel.startCall.postValue(Unit)
+//            } else {
+//                GCoreMeet.instance.close()
+//            }
+//        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -328,6 +345,11 @@ class RoomActivity : AppCompatActivity() {
             sdkLogger?.initObserver()
 
             viewModel.showProgress()
+
+
+            Log.d(TAG, "GCoreMeet.instance.roomManager ${GCoreMeet.instance.roomManager}")
+            roomManager = GCoreMeet.instance.roomManager
+            Log.d(TAG, "GCoreMeet.instance.roomManager ${GCoreMeet.instance.roomManager}")
 
             GCoreMeet.instance.startConnection(this)
 

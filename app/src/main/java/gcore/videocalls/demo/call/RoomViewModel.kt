@@ -264,6 +264,7 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
             }
         }
     }
+
     private val closedByModeratorObserver = Observer { _: Unit ->
         close()
     }
@@ -406,9 +407,4 @@ class RoomViewModel(private val roomManager: RoomManager) : BaseViewModel() {
     fun acceptedPermission(peerData: RequestPeerData) {
         roomManager.acceptedPermission(peerData)
     }
-//
-//    fun checkWaitingRoom() {
-//
-//    }
-
 }
